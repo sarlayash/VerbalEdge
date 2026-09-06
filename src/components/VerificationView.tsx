@@ -1,8 +1,25 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Certificate, Badge, Learner } from '../types';
-import { CheckCircle2, XCircle, ShieldAlert, ArrowLeft, Award, ExternalLink, Calendar, User, Hash } from 'lucide-react';
+import {
+  CheckCircle2,
+  XCircle,
+  ShieldAlert,
+  ArrowLeft,
+  Award,
+  ExternalLink,
+  Calendar,
+  User,
+  Hash,
+  Download,
+  QrCode,
+  Copy,
+  Check,
+  ShieldCheck,
+} from 'lucide-react';
 import { CertificateView } from './CertificateView';
 import { BadgeCard } from './BadgeCard';
+import { generateQrCode } from '../utils/qr';
+import { getFullVerificationUrl } from '../utils/verificationUrl';
 
 interface VerificationViewProps {
   credentialId: string;
@@ -16,7 +33,57 @@ export const VerificationView: React.FC<VerificationViewProps> = ({
   findCredential,
 }) => {
   const [searchId, setSearchId] = useState(credentialId);
+  const [copied, setCopied] = useState(false);
+  const [downloadingQr, setDownloadingQr] = useState(false);
+  const [qrDataUrl, setQrDataUrl] = useState<string>('');
   const result = findCredential(searchId);
+
+  const activeId = result
+    ? result.type === 'certificate'
+      ? (result.data as Certificate).certId
+      : (result.data as Badge).badgeId
+    : '';
+
+  useEffect(() => {
+    if (result && result.data.isValid && activeId) {
+      const fullUrl = getFullVerificationUrl(activeId);
+      generateQrCode(fullUrl, 480).then((url) => {
+        if (url) setQrDataUrl(url);
+      });
+    } else {
+      setQrDataUrl('');
+    }
+  }, [result, activeId]);
+
+  const handleDownloadQr = () => {
+    if (!qrDataUrl || !activeId) return;
+    setDownloadingQr(true);
+    const link = document.createElement('a');
+    link.download = `${activeId}_verification_qr.png`;
+    link.href = qrDataUrl;
+    link.click();
+    setTimeout(() => setDownloadingQr(false), 1500);
+  };
+
+  const handleCopyLink = async () => {
+    if (!activeId) return;
+    const fullUrl = getFullVerificationUrl(activeId);
+    try {
+      await navigator.clipboard.writeText(fullUrl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // Fallback if clipboard API unavailable
+      const input = document.createElement('input');
+      input.value = fullUrl;
+      document.body.appendChild(input);
+      input.select();
+      document.execCommand('copy');
+      document.body.removeChild(input);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-slate-50 py-10 px-4 sm:px-6">
@@ -53,7 +120,7 @@ export const VerificationView: React.FC<VerificationViewProps> = ({
                 : 'Credential Record Not Found or Revoked'}
             </h1>
             <p className="text-sm text-slate-500 max-w-md mt-1">
-              Issued by VerbalEdge Academy — Powered by Kapil Narula
+              Issued by VerbalEdge Academy — Powered by Kapil
             </p>
           </div>
 

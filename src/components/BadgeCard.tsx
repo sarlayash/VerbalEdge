@@ -1,7 +1,9 @@
-import React, { useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Badge } from '../types';
 import { Award, Download, ExternalLink, QrCode, ShieldCheck, Sparkles } from 'lucide-react';
 import { downloadElementAsPng, downloadElementAsPdf } from '../utils/export';
+import { generateQrCode } from '../utils/qr';
+import { getFullVerificationUrl } from '../utils/verificationUrl';
 
 interface BadgeCardProps {
   badge: Badge;
@@ -11,7 +13,16 @@ interface BadgeCardProps {
 
 export const BadgeCard: React.FC<BadgeCardProps> = ({ badge, onOpenVerify, compact = false }) => {
   const badgeDomId = `badge-render-${badge.badgeId}`;
-  const [downloading, setDownloading] = React.useState(false);
+  const [downloading, setDownloading] = useState(false);
+  const [qrCodeUrl, setQrCodeUrl] = useState<string>(badge.qrCodeDataUrl || '');
+
+  useEffect(() => {
+    // Always ensure a full, valid, scannable QR code exists for phones
+    const fullUrl = getFullVerificationUrl(badge.badgeId);
+    generateQrCode(fullUrl).then((url) => {
+      if (url) setQrCodeUrl(url);
+    });
+  }, [badge.badgeId]);
 
   const getDayTheme = (day: number) => {
     switch (day) {
@@ -96,17 +107,31 @@ export const BadgeCard: React.FC<BadgeCardProps> = ({ badge, onOpenVerify, compa
           </div>
         </div>
 
-        {/* Title and Learner */}
-        <h3 className="text-xl font-black tracking-tight mt-3 text-white">
-          {badge.title}
-        </h3>
-        <p className="text-xs text-white/80 font-medium mt-0.5">Presented to</p>
-        <p className="text-base font-bold text-yellow-200 tracking-wide mt-0.5">
-          {badge.learnerName}
-        </p>
+        {/* Title */}
+        <div className="w-full text-center mt-3 mb-1 px-2">
+          <h3 className="text-xl sm:text-2xl font-black tracking-tight leading-tight text-white drop-shadow-sm">
+            {badge.title}
+          </h3>
+        </div>
+
+        {/* Presented To Label */}
+        <div className="w-full flex items-center justify-center gap-2 my-2">
+          <div className="h-px bg-white/25 flex-1 max-w-[36px]" />
+          <span className="text-[10px] sm:text-[11px] uppercase tracking-[0.2em] text-white/80 font-bold select-none">
+            Presented to
+          </span>
+          <div className="h-px bg-white/25 flex-1 max-w-[36px]" />
+        </div>
+
+        {/* Learner Name */}
+        <div className="w-full text-center mb-3 px-2">
+          <p className="text-lg sm:text-xl font-black text-yellow-300 tracking-wide leading-tight drop-shadow-sm">
+            {badge.learnerName}
+          </p>
+        </div>
 
         {/* Workshop Credential details */}
-        <div className="w-full bg-black/25 rounded-xl p-3 my-4 border border-white/10 flex items-center justify-between gap-3 text-left">
+        <div className="w-full bg-black/25 rounded-xl p-3 my-2 border border-white/10 flex items-center justify-between gap-3 text-left">
           <div className="flex-1 min-w-0">
             <div className="text-[10px] uppercase tracking-wider text-white/60">Badge ID</div>
             <div className="font-code text-xs font-semibold text-white truncate">{badge.badgeId}</div>
@@ -115,15 +140,20 @@ export const BadgeCard: React.FC<BadgeCardProps> = ({ badge, onOpenVerify, compa
           </div>
 
           {/* QR Code thumbnail */}
-          {badge.qrCodeDataUrl ? (
-            <div className="bg-white p-1 rounded-lg shrink-0 shadow">
-              <img src={badge.qrCodeDataUrl} alt="QR Code" className="w-14 h-14" />
-            </div>
-          ) : (
-            <div className="w-14 h-14 bg-white/20 rounded-lg flex items-center justify-center shrink-0">
-              <QrCode className="w-8 h-8 text-white/70" />
-            </div>
-          )}
+          <div className="flex flex-col items-center shrink-0">
+            {qrCodeUrl ? (
+              <div className="bg-white p-1 rounded-lg shadow-md border border-white/20">
+                <img src={qrCodeUrl} alt="Verify QR" className="w-14 h-14 block" />
+              </div>
+            ) : (
+              <div className="w-14 h-14 bg-white/20 rounded-lg flex items-center justify-center shrink-0">
+                <QrCode className="w-7 h-7 text-white/70" />
+              </div>
+            )}
+            <span className="text-[8px] uppercase tracking-wider text-white/80 font-bold mt-1">
+              Scan QR
+            </span>
+          </div>
         </div>
 
         {/* Footer date & status */}

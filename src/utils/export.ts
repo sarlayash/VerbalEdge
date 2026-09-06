@@ -9,6 +9,9 @@ export async function downloadElementAsPng(elementId: string, filename: string):
   }
 
   try {
+    if (typeof document !== 'undefined' && document.fonts) {
+      await document.fonts.ready;
+    }
     const dataUrl = await toPng(node, {
       quality: 0.98,
       pixelRatio: 2,
@@ -37,6 +40,9 @@ export async function downloadElementAsPdf(
   }
 
   try {
+    if (typeof document !== 'undefined' && document.fonts) {
+      await document.fonts.ready;
+    }
     const dataUrl = await toPng(node, {
       quality: 0.98,
       pixelRatio: 2,

@@ -64,7 +64,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
               </span>
             </div>
             <div className="text-xs text-slate-400 font-medium">
-              Powered by Kapil Narula
+              Powered by Kapil
             </div>
           </div>
         </div>
@@ -213,7 +213,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
       {/* Footer with Discreet Hidden Admin Trigger */}
       <footer className="relative z-10 border-t border-slate-900 py-6 px-6 text-center text-xs text-slate-600 flex flex-col sm:flex-row items-center justify-between max-w-6xl mx-auto w-full gap-4">
         <div>
-          © {new Date().getFullYear()} VerbalEdge Academy. All rights reserved. Powered by Kapil Narula.
+          © {new Date().getFullYear()} VerbalEdge Academy. All rights reserved. Powered by Kapil.
         </div>
 
         <div className="flex items-center gap-4">

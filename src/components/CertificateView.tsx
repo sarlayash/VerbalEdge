@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Certificate } from '../types';
 import { Award, CheckCircle2, Download, ExternalLink, Printer, ShieldCheck, Sparkles } from 'lucide-react';
 import { downloadElementAsPng, downloadElementAsPdf } from '../utils/export';
+import { generateQrCode } from '../utils/qr';
+import { getFullVerificationUrl } from '../utils/verificationUrl';
 
 interface CertificateViewProps {
   certificate: Certificate;
@@ -16,7 +18,16 @@ export const CertificateView: React.FC<CertificateViewProps> = ({
 }) => {
   const domId = `cert-render-${certificate.certId}`;
   const [downloading, setDownloading] = useState(false);
+  const [qrCodeUrl, setQrCodeUrl] = useState<string>(certificate.qrCodeDataUrl || '');
   const isGold = certificate.theme === 'gold' || certificate.type === 'grand';
+
+  useEffect(() => {
+    // Generate valid full scannable verification URL for mobile phone camera scanning
+    const fullUrl = getFullVerificationUrl(certificate.certId);
+    generateQrCode(fullUrl).then((url) => {
+      if (url) setQrCodeUrl(url);
+    });
+  }, [certificate.certId]);
 
   const handleDownloadPng = async () => {
     setDownloading(true);
@@ -125,20 +136,25 @@ export const CertificateView: React.FC<CertificateViewProps> = ({
           </p>
 
           {/* Recipient Name */}
-          <div className="my-2 sm:my-3">
+          <div className="my-3 sm:my-4 w-full text-center px-4">
             <h1
-              className={`font-serif-display text-3xl sm:text-5xl font-bold tracking-tight pb-2 border-b-2 inline-block px-8 ${
-                isGold
-                  ? 'text-yellow-200 border-amber-400/50'
-                  : 'text-indigo-950 border-indigo-500'
+              className={`font-serif-display text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight leading-snug max-w-xl mx-auto break-words ${
+                isGold ? 'text-yellow-200' : 'text-indigo-950'
               }`}
             >
               {certificate.learnerName}
             </h1>
+            <div
+              className={`h-0.5 w-48 sm:w-64 mx-auto mt-2 rounded-full ${
+                isGold
+                  ? 'bg-gradient-to-r from-transparent via-amber-400 to-transparent'
+                  : 'bg-gradient-to-r from-transparent via-indigo-500 to-transparent'
+              }`}
+            />
           </div>
 
           {/* Description */}
-          <p className="max-w-xl mx-auto text-xs sm:text-sm opacity-85 leading-relaxed mt-3">
+          <p className="max-w-xl mx-auto text-xs sm:text-sm opacity-85 leading-relaxed mt-3 sm:mt-4 px-2">
             has successfully completed all rigorous verbal ability, executive articulation, and campus placement
             readiness challenges with distinction in the{' '}
             <strong className={isGold ? 'text-amber-200' : 'text-indigo-900'}>
@@ -162,16 +178,20 @@ export const CertificateView: React.FC<CertificateViewProps> = ({
 
           {/* Official Seal / QR Center */}
           <div className="flex flex-col items-center justify-center">
-            {certificate.qrCodeDataUrl ? (
-              <div className="bg-white p-1.5 rounded-xl shadow-lg border border-black/10">
+            {qrCodeUrl ? (
+              <div className="bg-white p-1 rounded-xl shadow-lg border border-black/10">
                 <img
-                  src={certificate.qrCodeDataUrl}
+                  src={qrCodeUrl}
                   alt="Verify QR"
-                  className="w-16 h-16 sm:w-20 sm:h-20"
+                  className="w-14 h-14 sm:w-16 sm:h-16 block"
                 />
               </div>
-            ) : null}
-            <div className="text-[9px] uppercase tracking-widest mt-1 opacity-70">
+            ) : (
+              <div className="w-14 h-14 sm:w-16 sm:h-16 bg-slate-100 rounded-xl flex items-center justify-center border border-black/10">
+                <ShieldCheck className="w-7 h-7 text-indigo-600" />
+              </div>
+            )}
+            <div className="text-[9px] uppercase tracking-widest mt-1 opacity-70 font-semibold">
               Scan to Authenticate
             </div>
           </div>

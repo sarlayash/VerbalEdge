@@ -16,6 +16,7 @@ import {
   INITIAL_MESSAGES,
 } from '../data/initialData';
 import { generateQrCode } from '../utils/qr';
+import { getFullVerificationUrl } from '../utils/verificationUrl';
 import { sounds } from '../utils/audio';
 
 const STORAGE_KEYS = {
@@ -242,9 +243,8 @@ export function useWorkshopStore() {
         3: 'Day 3 Placement Interview Certificate',
       };
 
-      const verificationOrigin = typeof window !== 'undefined' ? window.location.origin : '';
-      const badgeVerifyUrl = `${verificationOrigin}?verify=${badgeId}`;
-      const certVerifyUrl = `${verificationOrigin}?verify=${certId}`;
+      const badgeVerifyUrl = getFullVerificationUrl(badgeId);
+      const certVerifyUrl = getFullVerificationUrl(certId);
 
       const [badgeQr, certQr] = await Promise.all([
         generateQrCode(badgeVerifyUrl),
@@ -291,7 +291,7 @@ export function useWorkshopStore() {
       const allCompletedDays = Array.from(new Set([...learner.completedDays, day]));
       if (allCompletedDays.includes(1) && allCompletedDays.includes(2) && allCompletedDays.includes(3)) {
         const grandCertId = `VE-CRT-GR-${Math.floor(10000 + Math.random() * 90000)}`;
-        const grandVerifyUrl = `${verificationOrigin}?verify=${grandCertId}`;
+        const grandVerifyUrl = getFullVerificationUrl(grandCertId);
         const grandQr = await generateQrCode(grandVerifyUrl);
 
         grandCert = {
@@ -533,8 +533,7 @@ export function useWorkshopStore() {
     if (!learner) return;
     const dateStr = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
     const badgeId = `VE-BDG-D${day}-${Math.floor(1000 + Math.random() * 9000)}`;
-    const verificationOrigin = typeof window !== 'undefined' ? window.location.origin : '';
-    const badgeVerifyUrl = `${verificationOrigin}?verify=${badgeId}`;
+    const badgeVerifyUrl = getFullVerificationUrl(badgeId);
     const badgeQr = await generateQrCode(badgeVerifyUrl);
 
     const badgeTitles: Record<number, string> = {

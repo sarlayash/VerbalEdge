@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VerbalEdge - Redirecting</title>
+    <script>
+      // Single Page App redirect for GitHub Pages
+      // Catches direct path visits (e.g. /VerbalEdge/verify/VE-BDG-D1-7701 or /verify/VE-BDG-D1-7701)
+      (function() {
+        var pathname = window.location.pathname;
+        var search = window.location.search;
+        var hash = window.location.hash;
+
+        // Detect if deployed on GitHub Pages with /VerbalEdge repo base
+        var repoName = '/VerbalEdge';
+        var hasRepoPrefix = pathname.indexOf(repoName) === 0;
+        var relativePath = hasRepoPrefix ? pathname.substring(repoName.length) : pathname;
+        var prefix = hasRepoPrefix ? repoName : '';
+
+        // Check if path contains /verify/<credential_id>
+        var verifyMatch = relativePath.match(/\/verify\/([^/?#]+)/);
+        if (verifyMatch && verifyMatch[1]) {
+          var target = prefix + '/?verify=' + encodeURIComponent(verifyMatch[1]) + (hash ? hash : '');
+          window.location.replace(target);
+          return;
+        }
+
+        // Check if path is /admin
+        if (relativePath.indexOf('/admin') !== -1) {
+          window.location.replace(prefix + '/?admin=true');
+          return;
+        }
+
+        // Fallback to app root
+        window.location.replace(prefix + '/' + search + hash);
+      })();
+    </script>
+  </head>
+  <body style="font-family: sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; background: #0f172a; color: #fff;">
+    <div style="text-align: center;">
+      <h2 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.5rem;">Authenticating Credential...</h2>
+      <p style="font-size: 0.875rem; color: #94a3b8;">Redirecting to VerbalEdge verification portal...</p>
+    </div>
+  </body>
+</html>

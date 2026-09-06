@@ -121,7 +121,7 @@ export const LearnerDashboard: React.FC<LearnerDashboardProps> = ({
                 </span>
               </div>
               <div className="text-[11px] text-slate-500 font-medium hidden sm:block">
-                Powered by Kapil Narula
+                Powered by Kapil
               </div>
             </div>
           </div>

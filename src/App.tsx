@@ -43,9 +43,25 @@ export default function App() {
   useEffect(() => {
     const handleUrlChange = () => {
       const url = new URL(window.location.href);
-      const verifyParam = url.searchParams.get('verify');
+      let verifyParam = url.searchParams.get('verify');
       const adminParam = url.searchParams.get('admin');
       const path = url.pathname;
+
+      // Also check hash (e.g. #verify=ID or #/verify/ID)
+      if (!verifyParam && url.hash) {
+        const hashMatch = url.hash.match(/[#&]verify=([^&]+)/) || url.hash.match(/#\/verify\/([^/?#]+)/);
+        if (hashMatch && hashMatch[1]) {
+          verifyParam = decodeURIComponent(hashMatch[1]);
+        }
+      }
+
+      // Also check pathname (e.g. /verify/ID or /VerbalEdge/verify/ID)
+      if (!verifyParam) {
+        const pathMatch = path.match(/\/verify\/([^/?#]+)/);
+        if (pathMatch && pathMatch[1]) {
+          verifyParam = decodeURIComponent(pathMatch[1]);
+        }
+      }
 
       if (verifyParam) {
         setVerifyId(verifyParam);
