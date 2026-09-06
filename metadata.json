@@ -1,0 +1,7 @@
+{
+  "name": "VerbalEdge - 3-Day Verbal Ability & Placement Readiness Challenge",
+  "description": "Interactive 3-Day Verbal Ability & Placement Readiness Workshop powered by Kapil. Daily challenges, verified QR badges and certificates, real-time messaging, and admin dashboard.",
+  "requestFramePermissions": ["microphone"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
+

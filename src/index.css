@@ -1,0 +1,86 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  --font-serif: 'Playfair Display', Georgia, serif;
+  --font-cert: 'Cinzel', serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+body {
+  font-family: var(--font-sans);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.font-cert {
+  font-family: var(--font-cert);
+}
+
+.font-serif-display {
+  font-family: var(--font-serif);
+}
+
+.font-code {
+  font-family: var(--font-mono);
+}
+
+/* Certificate gold foil effect */
+.gold-gradient-border {
+  border-image: linear-gradient(135deg, #d4af37 0%, #f9f295 25%, #e0aa3e 50%, #faf6a8 75%, #b8860b 100%) 1;
+}
+
+.gold-gradient-text {
+  background: linear-gradient(135deg, #b8860b 0%, #e6ca65 40%, #996515 70%, #d4af37 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.gold-badge-shimmer {
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.15) 0%, rgba(255, 255, 255, 0.4) 50%, rgba(212, 175, 55, 0.15) 100%);
+}
+
+/* Glassmorphic surface */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.glass-panel-dark {
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* Custom smooth scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.4);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(100, 116, 139, 0.6);
+}
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .printable-certificate, .printable-certificate * {
+    visibility: visible;
+  }
+  .printable-certificate {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "short_name": "VerbalEdge",
+  "name": "VerbalEdge - 3-Day Verbal Ability & Placement Readiness Challenge",
+  "description": "Speak Better. Think Faster. Get Hired. 3-Day Workshop powered by Kapil.",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "type": "image/svg+xml",
+      "sizes": "192x192 512x512"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#0f172a",
+  "theme_color": "#4f46e5",
+  "display": "standalone",
+  "orientation": "portrait"
+}
